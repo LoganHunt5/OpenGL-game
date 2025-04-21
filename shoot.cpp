@@ -9,12 +9,22 @@ const char *vertexShaderSource =
     " gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\0";
 
-const char *fragmentShaderSource = "#version 330 core\n"
-                                   "out vec4 FragColor;\n"
-                                   "void main()\n"
-                                   "{\n"
-                                   "FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-                                   "}\0";
+const char *fragment1ShaderSource =
+    "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "}\0";
+
+const char *fragment2ShaderSource =
+    "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "FragColor = vec4(0.961f, 0.698f, 0.961f, 1.0f);\n"
+    "}\0";
+
 int main() {
   if (!glfwInit()) {
     return -1;
@@ -40,31 +50,41 @@ int main() {
   glViewport(0, 0, 800, 600);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-  unsigned int shaderProgram;
-  makeShaderProgram(&shaderProgram);
+  unsigned int shaderProgramOrange;
+  makeShaderProgram(&shaderProgramOrange, vertexShaderSource,
+                    fragment1ShaderSource);
+  unsigned int shaderProgramPink;
+  makeShaderProgram(&shaderProgramPink, vertexShaderSource,
+                    fragment2ShaderSource);
 
   // f forces a float, floats have less precision, and 4 vs 8 bytes size
-  float vertices[] = {
+  float tri1Vertices[] = {
       0.5f,  0.5f,  0.0f, // top right
       0.5f,  -0.5f, 0.0f, // bottom right
       -0.5f, -0.5f, 0.0f, // bottom left
       -0.5f, 0.5f,  0.0f, // top left
-      1.0f,  0.0f,  0.0f  // point
   };
-  unsigned int indices[] = {
-      // note that we start from 0!
+  unsigned int tri1Indices[] = {
       0, 1, 3, // first triangle
       1, 2, 3, // second triangle
-      0, 1, 4  // third
   };
+  float tri2Verticies[] = {
+      1.0f, 0.0f,  0.0f, // left
+      0.5f, 1.0f,  0.0f, // top
+      0.5f, -1.0f, 0.0f  // bot
+  };
+
   // vertex buffer to send all points to gpu at once and keep them here
-  unsigned int VBO, VAO, EBO;
+  unsigned int VBOs[2], VAOs[2], EBO;
   // assign a buffer ID to gl object
-  glGenVertexArrays(1, &VAO);
-  glGenBuffers(1, &VBO);
+  glGenVertexArrays(2, VAOs);
+  glGenBuffers(2, VBOs);
   glGenBuffers(1, &EBO);
-  makeVAO(&VAO, &VBO, &EBO, &shaderProgram, vertices, sizeof(vertices), indices,
-          sizeof(indices));
+  makeVAO(&(VAOs[0]), &(VBOs[0]), &EBO, &shaderProgramOrange, tri1Vertices,
+          sizeof(tri1Vertices), tri1Indices, sizeof(tri1Indices), true);
+
+  makeVAO(&(VAOs[1]), &(VBOs[1]), NULL, &shaderProgramPink, tri2Verticies,
+          sizeof(tri2Verticies), NULL, 0, false);
 
   /*
   glBindVertexArray(VAO);
@@ -77,7 +97,8 @@ int main() {
   */
 
   // wireframe
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
   // to go back
   // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -88,20 +109,21 @@ int main() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    renderSteps(&shaderProgram, &VAO);
-    /*
-    glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    */
+    renderSteps(&shaderProgramOrange, &(VAOs[0]), 6, true);
+    renderSteps(&shaderProgramPink, &(VAOs[1]), 3, false);
+
+    // glUseProgram(altShaderProgram);
+    // glBindVertexArray(VAOs[1]);
+    // glDrawArrays(GL_TRIANGLES, 0, 3);
 
     // check and call events and swap the buffers
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
-  glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
-  glDeleteProgram(shaderProgram);
+  glDeleteVertexArrays(2, VAOs);
+  glDeleteBuffers(2, VBOs);
+  glDeleteProgram(shaderProgramOrange);
+  glDeleteProgram(shaderProgramPink);
   glfwTerminate();
   return 0;
 }
@@ -110,10 +132,11 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   glViewport(0, 0, width, height);
 }
 
-void makeShaderProgram(unsigned int *shaderProgram) {
+void makeShaderProgram(unsigned int *shaderProgram, const char *vertexSource,
+                       const char *fragmentSource) {
   unsigned int vertShader;
   vertShader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertShader, 1, &vertexShaderSource, NULL);
+  glShaderSource(vertShader, 1, &vertexSource, NULL);
   glCompileShader(vertShader);
 
   int success;
@@ -127,7 +150,7 @@ void makeShaderProgram(unsigned int *shaderProgram) {
 
   unsigned int fragmentShader;
   fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+  glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
   glCompileShader(fragmentShader);
 
   glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
@@ -153,7 +176,7 @@ void makeShaderProgram(unsigned int *shaderProgram) {
 
 void makeVAO(unsigned int *VAO, unsigned int *VBO, unsigned int *EBO,
              unsigned int *shaderProgram, float *points, int pointsSize,
-             unsigned int *indices, int indicesSize) {
+             unsigned int *indices, int indicesSize, bool useEBO) {
 
   glBindVertexArray(*VAO);
   glBindBuffer(GL_ARRAY_BUFFER, *VBO);
@@ -164,11 +187,11 @@ void makeVAO(unsigned int *VAO, unsigned int *VBO, unsigned int *EBO,
    * GL_DYNAMIC_DRAW: the data is changed a lot and used many times.
    */
   glBufferData(GL_ARRAY_BUFFER, pointsSize, points, GL_STATIC_DRAW);
-
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices, GL_STATIC_DRAW);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  if (useEBO) {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices, GL_STATIC_DRAW);
+  }
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
   glEnableVertexAttribArray(0);
 }
 
@@ -178,8 +201,13 @@ void processInput(GLFWwindow *window) {
   }
 }
 
-void renderSteps(unsigned int *shaderProgram, unsigned int *VAO) {
+void renderSteps(unsigned int *shaderProgram, unsigned int *VAO, int count,
+                 bool useEBO) {
   glUseProgram(*shaderProgram);
   glBindVertexArray(*VAO);
-  glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
+  if (useEBO) {
+    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
+  } else {
+    glDrawArrays(GL_TRIANGLES, 0, count);
+  }
 }
