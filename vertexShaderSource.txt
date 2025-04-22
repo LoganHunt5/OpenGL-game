@@ -8,10 +8,11 @@ out vec3 posToColor;
 out vec2 texCoord;
 
 uniform vec3 xyOffset;
+uniform mat4 transform;
 
 void main()
 {
-gl_Position = vec4(aPos + xyOffset, 1.0);
+gl_Position = transform * vec4(aPos + xyOffset, 1.0);
 ourColor = aColor;
 posToColor = aPos + xyOffset  + vec3(0.3f, 0.3f, 0.3f);
 texCoord = aTexCoord + vec2(xyOffset.x, -xyOffset.y);

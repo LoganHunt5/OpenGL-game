@@ -1,11 +1,17 @@
-#include "shader_lib.h"
-#include "shoot_lib.h"
+#include "shader_lib.hpp"
+#include "shoot_lib.hpp"
 #include <GLFW/glfw3.h>
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include <iostream>
+#include <stdio.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 int main() {
+
   if (!glfwInit()) {
     return -1;
   }
@@ -74,9 +80,22 @@ int main() {
   int width, height, nrChannels;
   unsigned char *data =
       stbi_load("smileyjpg.jpg", &width, &height, &nrChannels, 0);
-  unsigned int textures;
-  glGenTextures(1, &textures);
-  glBindTexture(GL_TEXTURE_2D, textures);
+  unsigned int textures[2];
+  glGenTextures(2, textures);
+  glBindTexture(GL_TEXTURE_2D, textures[0]);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+               GL_UNSIGNED_BYTE, data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+  stbi_image_free(data);
+
+  data = stbi_load("plaid.jpg", &width, &height, &nrChannels, 0);
+  glBindTexture(GL_TEXTURE_2D, textures[1]);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -94,17 +113,33 @@ int main() {
   glUseProgram(Orange.ID);
   glUniform3f(vHOffLocation, 0.0f, 0.0f, 0.0f);
 
+  Orange.use();
+  Orange.setInt("texture1", 0);
+  Orange.setInt("texture2", 1);
+
+  unsigned int transformLoc = glGetUniformLocation(Orange.ID, "transform");
+
   while (!glfwWindowShouldClose(window)) {
     processInput(window);
 
     // rendering
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
     timeValue = glfwGetTime();
-    xOffValue = (sin(timeValue) / 2.0f);
-    yOffValue = (cos(timeValue) / 2.0f);
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::rotate(trans, glm::radians((float)timeValue * 80),
+                        glm::vec3(0.0, 0.0, 1.0));
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+    xOffValue = (sin(timeValue * 8) / 2.0f);
+    yOffValue = (cos(timeValue * 4) / 2.0f);
     glUniform3f(vHOffLocation, xOffValue, yOffValue, 0.0f);
-    glBindTexture(GL_TEXTURE_2D, textures);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textures[0]);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, textures[1]);
     renderSteps(&Orange, &(VAOs[0]), 6, true);
     // renderSteps(&Orange, &(VAOs[1]), 3, false);
 

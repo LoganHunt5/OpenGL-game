@@ -1,7 +1,7 @@
 #ifndef SHOOT_LIB
 #define SHOOT_LIB
 
-#include "shader_lib.h"
+#include "shader_lib.hpp"
 #include <cmath>
 #include <cstdlib>
 #include <glad/glad.h>
