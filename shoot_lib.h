@@ -1,3 +1,8 @@
+#ifndef SHOOT_LIB
+#define SHOOT_LIB
+
+#include "shader_lib.h"
+#include <cmath>
 #include <cstdlib>
 #include <glad/glad.h>
 #include <iostream>
@@ -14,20 +19,12 @@ void makeShaderProgram(unsigned int *shaderProgram,
                        const char *fragmentShaderSource);
 
 void makeVAO(unsigned int *VAO, unsigned int *VBO, unsigned int *EBO,
-             unsigned int *shaderProgram, float *points, int pointsSize,
-             unsigned int *indices, int indicesSize, bool useEBO);
+             float *points, int pointsSize, unsigned int *indices,
+             int indicesSize, bool useEBO);
 
-void renderSteps(unsigned int *shaderProgram, unsigned int *VAO, int count,
+void renderSteps(Shader *shaderProgram, unsigned int *VAO, int count,
                  bool useEBO);
 
 void vertexShader(float *points);
 
-void shapeAssembly();
-
-void geometryShader();
-
-void rasterizer();
-
-void fragShader();
-
-void aTestBlending();
+#endif
