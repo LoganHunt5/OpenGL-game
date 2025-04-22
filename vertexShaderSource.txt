@@ -1,12 +1,18 @@
 #version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
+layout (location = 2) in vec2 aTexCoord;
+
 out vec3 ourColor;
 out vec3 posToColor;
-uniform vec3 hOffset;
+out vec2 texCoord;
+
+uniform vec3 xyOffset;
+
 void main()
 {
-gl_Position = vec4(aPos + hOffset, 1.0);
+gl_Position = vec4(aPos + xyOffset, 1.0);
 ourColor = aColor;
-posToColor = aPos + hOffset;
+posToColor = aPos + xyOffset  + vec3(0.3f, 0.3f, 0.3f);
+texCoord = aTexCoord + vec2(xyOffset.x, -xyOffset.y);
 };
