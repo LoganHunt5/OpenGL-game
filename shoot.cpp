@@ -5,6 +5,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include <cstddef>
 #include <iostream>
 #include <stdio.h>
 #define STB_IMAGE_IMPLEMENTATION
@@ -39,35 +40,59 @@ int main() {
   Shader Orange("./vertexShaderSource.txt", "./fragmentShaderSource.txt");
   // Shader Pink("./vertexShaderSource.txt", "./fragmentShaderSource.txt");
 
-  // 0-2 pos, 3-5 color, 6-8 texture coords
-  float tri1Vertices[] = {
-      0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, // top right
-      0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, // bottom right
-      -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // bottom left
-      -0.5f, 0.5f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f  // top left
+  // 0-2 pos, 3-4 texture coords
+  float vertices[] = {
+      -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, //
+      0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  //
+      0.5f, 0.5f, -0.5f, 1.0f, 1.0f,   //
+      0.5f, 0.5f, -0.5f, 1.0f, 1.0f,   //
+      -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,  //
+      -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, //
+                                       ////
+      -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,  //
+      0.5f, -0.5f, 0.5f, 1.0f, 0.0f,   //
+      0.5f, 0.5f, 0.5f, 1.0f, 1.0f,    //
+      0.5f, 0.5f, 0.5f, 1.0f, 1.0f,    //
+      -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,   //
+      -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,  //
+                                       ////
+      -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,   //
+      -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,  //
+      -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, //
+      -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, //
+      -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,  //
+      -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,   //
+                                       ////
+      0.5f, 0.5f, 0.5f, 1.0f, 0.0f,    //
+      0.5f, 0.5f, -0.5f, 1.0f, 1.0f,   //
+      0.5f, -0.5f, -0.5f, 0.0f, 1.0f,  //
+      0.5f, -0.5f, -0.5f, 0.0f, 1.0f,  //
+      0.5f, -0.5f, 0.5f, 0.0f, 0.0f,   //
+      0.5f, 0.5f, 0.5f, 1.0f, 0.0f,    //
+                                       ////
+      -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, //
+      0.5f, -0.5f, -0.5f, 1.0f, 1.0f,  //
+      0.5f, -0.5f, 0.5f, 1.0f, 0.0f,   //
+      0.5f, -0.5f, 0.5f, 1.0f, 0.0f,   //
+      -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,  //
+      -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, //
+                                       ////
+      -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,  //
+      0.5f, 0.5f, -0.5f, 1.0f, 1.0f,   //
+      0.5f, 0.5f, 0.5f, 1.0f, 0.0f,    //
+      0.5f, 0.5f, 0.5f, 1.0f, 0.0f,    //
+      -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,   //
+      -0.5f, 0.5f, -0.5f, 0.0f, 1.0f   //
   };
-  unsigned int tri1Indices[] = {
-      0, 1, 3, // first triangle
-      1, 2, 3, // second triangle
-  };
-  /*
-  float tri2Verticies[] = {
-      1.0f, 0.0f,  0.0f, 1.0f, 0.0f, 0.0f, // left
-      0.5f, 1.0f,  0.0f, 0.0f, 1.0f, 0.0f, // top
-      0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f  // bot
-  };
-*/
+
   // vertex buffer to send all points to gpu at once and keep them here
   unsigned int VBOs[2], VAOs[2], EBO;
   // assign a buffer ID to gl object
   glGenVertexArrays(2, VAOs);
   glGenBuffers(2, VBOs);
   glGenBuffers(1, &EBO);
-  makeVAO(&(VAOs[0]), &(VBOs[0]), &EBO, tri1Vertices, sizeof(tri1Vertices),
-          tri1Indices, sizeof(tri1Indices), true);
-
-  // makeVAO(&(VAOs[1]), &(VBOs[1]), NULL, tri2Verticies, sizeof(tri2Verticies),
-  //         NULL, 0, false);
+  makeVAO(&(VAOs[0]), &(VBOs[0]), NULL, vertices, sizeof(vertices), NULL, 0,
+          false);
 
   // wireframe
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -78,6 +103,8 @@ int main() {
 
   // texture picture
   int width, height, nrChannels;
+  stbi_set_flip_vertically_on_load(
+      true); // tell stb_image.h to flip loaded texture's on the y-axis.
   unsigned char *data =
       stbi_load("smileyjpg.jpg", &width, &height, &nrChannels, 0);
   unsigned int textures[2];
@@ -107,41 +134,67 @@ int main() {
   glGenerateMipmap(GL_TEXTURE_2D);
   stbi_image_free(data);
 
-  float timeValue;
-  float xOffValue, yOffValue;
-  int vHOffLocation = glGetUniformLocation(Orange.ID, "xyOffset");
-  glUseProgram(Orange.ID);
-  glUniform3f(vHOffLocation, 0.0f, 0.0f, 0.0f);
-
   Orange.use();
   Orange.setInt("texture1", 0);
   Orange.setInt("texture2", 1);
 
-  unsigned int transformLoc = glGetUniformLocation(Orange.ID, "transform");
+  // rotate so that the plane is laying on the floor
+  glm::mat4 model = glm::mat4(1.0f);
+  model = glm::rotate(model, glm::radians((float)glfwGetTime()),
+                      glm::vec3(1.0f, 0.0f, 0.0f));
+
+  // move cam back a little(move world forward)
+  glm::mat4 view = glm::mat4(1.0f);
+  view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+  glm::mat4 projection;
+  projection =
+      glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+  glEnable(GL_DEPTH_TEST);
+  glm::vec3 cubePositions[] = {
+      glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
+      glm::vec3(-1.5f, -2.2f, -2.5f), glm::vec3(-3.8f, -2.0f, -12.3f),
+      glm::vec3(2.4f, -0.4f, -3.5f),  glm::vec3(-1.7f, 3.0f, -7.5f),
+      glm::vec3(1.3f, -2.0f, -2.5f),  glm::vec3(1.5f, 2.0f, -2.5f),
+      glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
 
   while (!glfwWindowShouldClose(window)) {
     processInput(window);
 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     // rendering
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-
-    timeValue = glfwGetTime();
-    glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::rotate(trans, glm::radians((float)timeValue * 80),
-                        glm::vec3(0.0, 0.0, 1.0));
-    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
-    xOffValue = (sin(timeValue * 8) / 2.0f);
-    yOffValue = (cos(timeValue * 4) / 2.0f);
-    glUniform3f(vHOffLocation, xOffValue, yOffValue, 0.0f);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, textures[1]);
-    renderSteps(&Orange, &(VAOs[0]), 6, true);
-    // renderSteps(&Orange, &(VAOs[1]), 3, false);
+
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f),
+                        glm::vec3(0.5f, 1.0f, 0.0f));
+    int modelLoc = glGetUniformLocation(Orange.ID, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    int viewLoc = glGetUniformLocation(Orange.ID, "view");
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    int projectionLoc = glGetUniformLocation(Orange.ID, "projection");
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+    Orange.use();
+    glBindVertexArray(VAOs[0]);
+    for (unsigned int i = 0; i < 10; i++) {
+      glm::mat4 model = glm::mat4(1.0f);
+      model = glm::translate(model, cubePositions[i]);
+      float angle = 20.0f * i + 10.0f;
+      model = glm::rotate(model, glm::radians(angle * (float)glfwGetTime()),
+                          glm::vec3(1.0f, 0.3f, 0.5f));
+      Orange.setMat4("model", model);
+
+      glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
 
     // check and call events and swap the buffers
     glfwSwapBuffers(window);
@@ -176,29 +229,15 @@ void makeVAO(unsigned int *VAO, unsigned int *VBO, unsigned int *EBO,
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices, GL_STATIC_DRAW);
   }
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
                         (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-                        (void *)(6 * sizeof(float)));
-  glEnableVertexAttribArray(2);
 }
 
 void processInput(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
-  }
-}
-
-void renderSteps(Shader *shaderProgram, unsigned int *VAO, int count,
-                 bool useEBO) {
-  shaderProgram->use();
-  glBindVertexArray(*VAO);
-  if (useEBO) {
-    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
-  } else {
-    glDrawArrays(GL_TRIANGLES, 0, count);
   }
 }
