@@ -26,6 +26,7 @@ void renderSteps(Shader *shaderProgram, unsigned int *VAO, int count,
                  bool useEBO);
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
+void scroll_callback(GLFWwindow *window, double xpos, double ypos);
 
 void vertexShader(float *points);
 
