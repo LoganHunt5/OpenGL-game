@@ -25,6 +25,8 @@ void makeVAO(unsigned int *VAO, unsigned int *VBO, unsigned int *EBO,
 void renderSteps(Shader *shaderProgram, unsigned int *VAO, int count,
                  bool useEBO);
 
+void mouse_callback(GLFWwindow *window, double xpos, double ypos);
+
 void vertexShader(float *points);
 
 #endif
