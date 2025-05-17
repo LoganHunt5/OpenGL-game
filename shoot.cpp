@@ -58,7 +58,7 @@ int main() {
   // Shader Pink("./vertexShaderSource.txt", "./fragmentShaderSource.txt");
 
   // 0-2 pos, 3-4 texture coords
-  float vertices[] = {
+  /* float vertices[] = {
       -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, //
       0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  //
       0.5f, 0.5f, -0.5f, 1.0f, 1.0f,   //
@@ -100,6 +100,15 @@ int main() {
       0.5f, 0.5f, 0.5f, 1.0f, 0.0f,    //
       -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,   //
       -0.5f, 0.5f, -0.5f, 0.0f, 1.0f   //
+  };*/
+
+  float vertices[] = {
+      -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, //
+      0.5f,  -0.5f, -0.5f, 1.0f, 0.0f, //
+      0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, //
+      0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, //
+      -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, //
+      -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, //
   };
 
   // vertex buffer to send all points to gpu at once and keep them here
@@ -168,12 +177,14 @@ int main() {
       glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
   glEnable(GL_DEPTH_TEST);
+  /*
   glm::vec3 cubePositions[] = {
       glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
       glm::vec3(-1.5f, -2.2f, -2.5f), glm::vec3(-3.8f, -2.0f, -12.3f),
       glm::vec3(2.4f, -0.4f, -3.5f),  glm::vec3(-1.7f, 3.0f, -7.5f),
       glm::vec3(1.3f, -2.0f, -2.5f),  glm::vec3(1.5f, 2.0f, -2.5f),
       glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
+      */
 
   view = camera.GetViewMatrix();
   glfwSetCursorPosCallback(window, mouse_callback);
@@ -203,11 +214,11 @@ int main() {
     glBindTexture(GL_TEXTURE_2D, textures[1]);
 
     Orange.use();
-
+    /*
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f),
                         glm::vec3(0.5f, 1.0f, 0.0f));
-
+  */
     view = camera.GetViewMatrix();
     Orange.setMat4("view", view);
 
@@ -223,6 +234,7 @@ int main() {
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
     glBindVertexArray(VAOs[0]);
+    /*
     for (unsigned int i = 0; i < 10; i++) {
       glm::mat4 model = glm::mat4(1.0f);
       model = glm::translate(model, cubePositions[i]);
@@ -233,6 +245,10 @@ int main() {
 
       glDrawArrays(GL_TRIANGLES, 0, 36);
     }
+    */
+    model = glm::mat4(1.0f);
+    Orange.setMat4("model", model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     // check and call events and swap the buffers
     glfwSwapBuffers(window);
