@@ -56,9 +56,9 @@ int main() {
   glViewport(0, 0, 800, 600);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-  Shader Orange("./vertexShaderSource.txt", "./lightingShader.txt");
-  Shader LightSourceShader("./lightsourcevertShader.txt",
-                           "./lightsourcefragShader.txt");
+  Shader Orange("./vertexShaderSource.vs", "./lightingShader.fs");
+  Shader LightSourceShader("./lightsourcevertShader.vs",
+                           "./lightsourcefragShader.fs");
   // Shader Pink("./vertexShaderSource.txt", "./fragmentShaderSource.txt");
   // 0-2 pos, 3-4 texture coords
   float vertices[] = {
@@ -204,6 +204,7 @@ int main() {
     Orange.setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
     Orange.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
     Orange.setVec3("lightPos", lightPos);
+    Orange.setVec3("viewPos", camera.Position);
 
     view = camera.GetViewMatrix();
     Orange.setMat4("view", view);
@@ -218,8 +219,8 @@ int main() {
       glm::mat4 model = glm::mat4(1.0f);
       model = glm::translate(model, cubePositions[i]);
       float angle = 20.0f * i + 10.0f;
-      // model = glm::rotate(model, glm::radians(angle * (float)glfwGetTime()),
-      //                     glm::vec3(1.0f, 0.3f, 0.5f));
+      model = glm::rotate(model, glm::radians(angle * (float)glfwGetTime()),
+                          glm::vec3(1.0f, 0.3f, 0.5f));
       Orange.setMat4("model", model);
 
       glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -229,6 +230,7 @@ int main() {
     view = camera.GetViewMatrix();
     LightSourceShader.setMat4("view", view);
     LightSourceShader.setMat4("projection", projection);
+
     // draw light cube
     model = glm::mat4(1.0f);
     lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
