@@ -62,48 +62,35 @@ int main() {
   // Shader Pink("./vertexShaderSource.txt", "./fragmentShaderSource.txt");
   // 0-2 pos, 3-4 texture coords
   float vertices[] = {
-      -0.5f, -0.5f, -0.5f, //
-      0.5f, -0.5f, -0.5f,  //
-      0.5f, 0.5f, -0.5f,   //
-      0.5f, 0.5f, -0.5f,   //
-      -0.5f, 0.5f, -0.5f,  //
-      -0.5f, -0.5f, -0.5f, //
-                           //
-      -0.5f, -0.5f, 0.5f,  //
-      0.5f, -0.5f, 0.5f,   //
-      0.5f, 0.5f, 0.5f,    //
-      0.5f, 0.5f, 0.5f,    //
-      -0.5f, 0.5f, 0.5f,   //
-      -0.5f, -0.5f, 0.5f,  //
-                           //
-      -0.5f, 0.5f, 0.5f,   //
-      -0.5f, 0.5f, -0.5f,  //
-      -0.5f, -0.5f, -0.5f, //
-      -0.5f, -0.5f, -0.5f, //
-      -0.5f, -0.5f, 0.5f,  //
-      -0.5f, 0.5f, 0.5f,   //
-                           //
-      0.5f, 0.5f, 0.5f,    //
-      0.5f, 0.5f, -0.5f,   //
-      0.5f, -0.5f, -0.5f,  //
-      0.5f, -0.5f, -0.5f,  //
-      0.5f, -0.5f, 0.5f,   //
-      0.5f, 0.5f, 0.5f,    //
-                           //
-      -0.5f, -0.5f, -0.5f, //
-      0.5f, -0.5f, -0.5f,  //
-      0.5f, -0.5f, 0.5f,   //
-      0.5f, -0.5f, 0.5f,   //
-      -0.5f, -0.5f, 0.5f,  //
-      -0.5f, -0.5f, -0.5f, //
-                           //
-      -0.5f, 0.5f, -0.5f,  //
-      0.5f, 0.5f, -0.5f,   //
-      0.5f, 0.5f, 0.5f,    //
-      0.5f, 0.5f, 0.5f,    //
-      -0.5f, 0.5f, 0.5f,   //
-      -0.5f, 0.5f, -0.5f   //
-  };
+      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.5f,  -0.5f, -0.5f,
+      0.0f,  0.0f,  -1.0f, 0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f,
+      0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f, -0.5f, 0.5f,  -0.5f,
+      0.0f,  0.0f,  -1.0f, -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f,
+
+      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,  0.5f,  -0.5f, 0.5f,
+      0.0f,  0.0f,  1.0f,  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  -0.5f, 0.5f,  0.5f,
+      0.0f,  0.0f,  1.0f,  -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,
+
+      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,  -0.5f, 0.5f,  -0.5f,
+      -1.0f, 0.0f,  0.0f,  -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,
+      -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,  -0.5f, -0.5f, 0.5f,
+      -1.0f, 0.0f,  0.0f,  -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,
+
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.5f,  0.5f,  -0.5f,
+      1.0f,  0.0f,  0.0f,  0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,
+      0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,  0.5f,  -0.5f, 0.5f,
+      1.0f,  0.0f,  0.0f,  0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,  0.5f,  -0.5f, -0.5f,
+      0.0f,  -1.0f, 0.0f,  0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,
+      0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,  -0.5f, -0.5f, 0.5f,
+      0.0f,  -1.0f, 0.0f,  -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,
+
+      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  -0.5f,
+      0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  -0.5f, 0.5f,  0.5f,
+      0.0f,  1.0f,  0.0f,  -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f};
   // vertex buffer to send all points to gpu at once and keep them here
   unsigned int VBOs[2], VAOs[2], EBO, lightVAOs[1];
   // assign a buffer ID to gl object
@@ -116,8 +103,10 @@ int main() {
   glGenVertexArrays(1, lightVAOs);
   glBindVertexArray(lightVAOs[0]);
   glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)2);
+  glEnableVertexAttribArray(1);
 
   // wireframe
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -163,6 +152,9 @@ int main() {
   // Orange.setInt("texture2", 1);
   Orange.setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
   Orange.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+
+  LightSourceShader.use();
+  LightSourceShader.setVec3("lightPos", lightPos);
 
   // rotate so that the plane is laying on the floor
   glm::mat4 model = glm::mat4(1.0f);
@@ -297,7 +289,7 @@ void makeVAO(unsigned int *VAO, unsigned int *VBO, unsigned int *EBO,
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices, GL_STATIC_DRAW);
   }
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
   /*
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
