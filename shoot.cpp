@@ -105,8 +105,6 @@ int main() {
   glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)2);
-  glEnableVertexAttribArray(1);
 
   // wireframe
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -147,14 +145,9 @@ int main() {
   glGenerateMipmap(GL_TEXTURE_2D);
   stbi_image_free(data);
 
-  Orange.use();
+  // Orange.use();
   // Orange.setInt("texture1", 0);
   // Orange.setInt("texture2", 1);
-  Orange.setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
-  Orange.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-
-  LightSourceShader.use();
-  LightSourceShader.setVec3("lightPos", lightPos);
 
   // rotate so that the plane is laying on the floor
   glm::mat4 model = glm::mat4(1.0f);
@@ -198,7 +191,7 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // rendering
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glActiveTexture(GL_TEXTURE0);
@@ -207,6 +200,11 @@ int main() {
     glBindTexture(GL_TEXTURE_2D, textures[1]);
 
     Orange.use();
+
+    Orange.setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
+    Orange.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    Orange.setVec3("lightPos", lightPos);
+
     view = camera.GetViewMatrix();
     Orange.setMat4("view", view);
 
@@ -214,43 +212,31 @@ int main() {
         glm::perspective(glm::radians(camera.Zoom),
                          (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     Orange.setMat4("projection", projection);
-    int modelLoc = glGetUniformLocation(Orange.ID, "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    int viewLoc = glGetUniformLocation(Orange.ID, "view");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    int projectionLoc = glGetUniformLocation(Orange.ID, "projection");
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
     glBindVertexArray(VAOs[0]);
     for (unsigned int i = 0; i < 1; i++) {
       glm::mat4 model = glm::mat4(1.0f);
       model = glm::translate(model, cubePositions[i]);
       float angle = 20.0f * i + 10.0f;
-      model = glm::rotate(model, glm::radians(angle * (float)glfwGetTime()),
-                          glm::vec3(1.0f, 0.3f, 0.5f));
+      // model = glm::rotate(model, glm::radians(angle * (float)glfwGetTime()),
+      //                     glm::vec3(1.0f, 0.3f, 0.5f));
       Orange.setMat4("model", model);
 
       glDrawArrays(GL_TRIANGLES, 0, 36);
     }
-    // draw light cube
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, lightPos);
-    model = glm::scale(model, glm::vec3(0.2f));
 
     LightSourceShader.use();
     view = camera.GetViewMatrix();
     LightSourceShader.setMat4("view", view);
-
-    projection =
-        glm::perspective(glm::radians(camera.Zoom),
-                         (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     LightSourceShader.setMat4("projection", projection);
-    modelLoc = glGetUniformLocation(LightSourceShader.ID, "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    viewLoc = glGetUniformLocation(LightSourceShader.ID, "view");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    projectionLoc = glGetUniformLocation(LightSourceShader.ID, "projection");
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    // draw light cube
+    model = glm::mat4(1.0f);
+    lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
+    lightPos *= glm::vec3(
+        sin((float)glfwGetTime()) * 2.0f, cos((float)glfwGetTime()) * 2.0f,
+        cos((float)glfwGetTime()) * 3.0f * sin((float)glfwGetTime()));
+    model = glm::translate(model, lightPos);
+    model = glm::scale(model, glm::vec3(0.2f));
     LightSourceShader.setMat4("model", model);
 
     glBindVertexArray(lightVAOs[0]);
@@ -263,7 +249,6 @@ int main() {
   glDeleteVertexArrays(2, VAOs);
   glDeleteBuffers(2, VBOs);
   glDeleteProgram(Orange.ID);
-  // glDeleteProgram(Pink.ID);
   glfwTerminate();
   return 0;
 }
@@ -291,11 +276,9 @@ void makeVAO(unsigned int *VAO, unsigned int *VBO, unsigned int *EBO,
   }
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
-  /*
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
                         (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
-  */
 }
 
 void mouse_callback(GLFWwindow *window, double xposIn, double yposIn) {
