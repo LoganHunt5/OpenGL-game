@@ -57,42 +57,50 @@ int main() {
   glViewport(0, 0, 800, 600);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-  Shader Orange("./vertexShaderSource.vs", "./lightingShader.fs");
-  Shader LightSourceShader("./lightsourcevertShader.vs",
-                           "./lightsourcefragShader.fs");
+  Shader Orange("./ShaderSource.vert.glsl", "./lighting.frag.glsl");
+  Shader LightSourceShader("./lightsource.vert.glsl",
+                           "./lightsource.frag.glsl");
+  Shader GrassShader("./grassfloor.vert.glsl", "./grassfloor.frag.glsl");
   // Shader Pink("./vertexShaderSource.txt", "./fragmentShaderSource.txt");
-  // 0-2 pos, 3-4 texture coords
+  // 0-2 pos, 3-5 normal 6-7 tex
   float vertices[] = {
-      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.5f,  -0.5f, -0.5f,
-      0.0f,  0.0f,  -1.0f, 0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f,
-      0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f, -0.5f, 0.5f,  -0.5f,
-      0.0f,  0.0f,  -1.0f, -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f,
+      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  0.5f,  -0.5f,
+      -0.5f, 0.0f,  0.0f,  -1.0f, 1.0f,  0.0f,  0.5f,  0.5f,  -0.5f, 0.0f,
+      0.0f,  -1.0f, 1.0f,  1.0f,  0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f,
+      1.0f,  1.0f,  -0.5f, 0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f, 0.0f,  1.0f,
+      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,
 
-      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,  0.5f,  -0.5f, 0.5f,
-      0.0f,  0.0f,  1.0f,  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  -0.5f, 0.5f,  0.5f,
-      0.0f,  0.0f,  1.0f,  -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,
+      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  0.5f,  -0.5f,
+      0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  0.0f,
+      0.0f,  1.0f,  1.0f,  1.0f,  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+      1.0f,  1.0f,  -0.5f, 0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
 
-      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,  -0.5f, 0.5f,  -0.5f,
-      -1.0f, 0.0f,  0.0f,  -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,
-      -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,  -0.5f, -0.5f, 0.5f,
-      -1.0f, 0.0f,  0.0f,  -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,
+      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,  1.0f,  0.0f,  -0.5f, 0.5f,
+      -0.5f, -1.0f, 0.0f,  0.0f,  1.0f,  1.0f,  -0.5f, -0.5f, -0.5f, -1.0f,
+      0.0f,  0.0f,  0.0f,  1.0f,  -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,
+      0.0f,  1.0f,  -0.5f, -0.5f, 0.5f,  -1.0f, 0.0f,  0.0f,  0.0f,  0.0f,
+      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
 
-      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.5f,  0.5f,  -0.5f,
-      1.0f,  0.0f,  0.0f,  0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,
-      0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,  0.5f,  -0.5f, 0.5f,
-      1.0f,  0.0f,  0.0f,  0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,
+      -0.5f, 1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.5f,  -0.5f, -0.5f, 1.0f,
+      0.0f,  0.0f,  0.0f,  1.0f,  0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,
+      0.0f,  1.0f,  0.5f,  -0.5f, 0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 
-      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,  0.5f,  -0.5f, -0.5f,
-      0.0f,  -1.0f, 0.0f,  0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,
-      0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,  -0.5f, -0.5f, 0.5f,
-      0.0f,  -1.0f, 0.0f,  -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,
+      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,  0.0f,  1.0f,  0.5f,  -0.5f,
+      -0.5f, 0.0f,  -1.0f, 0.0f,  1.0f,  1.0f,  0.5f,  -0.5f, 0.5f,  0.0f,
+      -1.0f, 0.0f,  1.0f,  0.0f,  0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,
+      1.0f,  0.0f,  -0.5f, -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,  0.0f,  0.0f,
+      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,  0.0f,  1.0f,
 
-      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  -0.5f,
-      0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  -0.5f, 0.5f,  0.5f,
-      0.0f,  1.0f,  0.0f,  -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f};
-  // vertex buffer to send all points to gpu at once and keep them here
+      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.5f,  0.5f,
+      -0.5f, 0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.5f,  0.5f,  0.5f,  0.0f,
+      1.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+      1.0f,  0.0f,  -0.5f, 0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  0.0f,  1.0f};
+  // vertex buffer to send all points to gpu at
+  // once and keep them here
   unsigned int VBOs[2], VAOs[2], EBO, lightVAOs[1];
   // assign a buffer ID to gl object
   glGenVertexArrays(2, VAOs);
@@ -104,7 +112,7 @@ int main() {
   glGenVertexArrays(1, lightVAOs);
   glBindVertexArray(lightVAOs[0]);
   glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
 
   // wireframe
@@ -118,7 +126,8 @@ int main() {
   int width, height, nrChannels;
   stbi_set_flip_vertically_on_load(
       true); // tell stb_image.h to flip loaded texture's on the y-axis.
-  unsigned char *data = stbi_load("pig.png", &width, &height, &nrChannels, 0);
+  unsigned char *data =
+      stbi_load("container2.png", &width, &height, &nrChannels, 0);
   unsigned int textures[2];
   glGenTextures(2, textures);
   glBindTexture(GL_TEXTURE_2D, textures[0]);
@@ -133,7 +142,7 @@ int main() {
   glGenerateMipmap(GL_TEXTURE_2D);
   stbi_image_free(data);
 
-  data = stbi_load("plaid.jpg", &width, &height, &nrChannels, 0);
+  data = stbi_load("grass.jpg", &width, &height, &nrChannels, 0);
   glBindTexture(GL_TEXTURE_2D, textures[1]);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -141,14 +150,10 @@ int main() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA,
                GL_UNSIGNED_BYTE, data);
   glGenerateMipmap(GL_TEXTURE_2D);
   stbi_image_free(data);
-
-  // Orange.use();
-  // Orange.setInt("texture1", 0);
-  // Orange.setInt("texture2", 1);
 
   // rotate so that the plane is laying on the floor
   glm::mat4 model = glm::mat4(1.0f);
@@ -203,11 +208,21 @@ int main() {
     glBindTexture(GL_TEXTURE_2D, textures[1]);
 
     Orange.use();
-
-    Orange.setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
-    Orange.setVec3("lightColor", glm::vec3(1.0f, 0.957f, 0.898f));
-    Orange.setVec3("lightPos", lightPos);
-    Orange.setVec3("viewPos", camera.Position);
+    Orange.setVec3("viewPos", camera.Position.x, camera.Position.y,
+                   camera.Position.z);
+    Orange.setVec3("light.color", 1.0f, 0.957f, 0.898f);
+    // Orange.setVec3("lightColor", glm::vec3(0.655f, 0.0f, 1.0));
+    Orange.setVec3("light.position", lightPos.x, lightPos.y, lightPos.z);
+    Orange.setVec3("light.ambient", 1.0f, 1.0f, 1.0f);
+    Orange.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
+    Orange.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+    Orange.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+    Orange.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+    Orange.setFloat("material.shininess", 32.0f);
+    Orange.setVec3("material.color", 1.0f, 0.5f, 0.31f);
+    Orange.setInt("material.diffuse", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textures[0]);
 
     view = camera.GetViewMatrix();
     Orange.setMat4("view", view);
@@ -217,7 +232,6 @@ int main() {
                          (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     Orange.setMat4("projection", projection);
 
-    glBindVertexArray(VAOs[0]);
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
     float angle = 10.0f;
@@ -225,22 +239,45 @@ int main() {
                         glm::vec3(1.0f, 0.3f, 0.5f));
     Orange.setMat4("model", model);
 
+    glBindVertexArray(VAOs[0]);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, -5.0f, 0.0f));
     model = glm::scale(model, glm::vec3(1000.0f, 1.0f, 1000.0f));
     Orange.setMat4("model", model);
-    Orange.setVec3("objectColor", glm::vec3(0.325f, 0.702f, 0.451f));
+    Orange.setVec3("material.ambient", 0.1f, 0.1f, 0.1f);
+    Orange.setVec3("material.diffuse", 0.325f, 0.702f, 0.451f);
+    Orange.setVec3("material.specular", 0.101f, 0.101f, 0.101f);
+    Orange.setFloat("material.shininess", 64.0f);
+
+    glBindVertexArray(VAOs[0]);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     // grass
+    GrassShader.use();
+    GrassShader.setMat4("projection", projection);
+    GrassShader.setMat4("view", view);
+    GrassShader.setVec3("viewPos", camera.Position.x, camera.Position.y,
+                        camera.Position.z);
+    GrassShader.setVec3("light.color", 1.0f, 0.957f, 0.898f);
+    GrassShader.setVec3("light.position", lightPos.x, lightPos.y, lightPos.z);
+    GrassShader.setVec3("light.ambient", 1.0f, 1.0f, 1.0f);
+    GrassShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
+    GrassShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+    GrassShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+    GrassShader.setVec3("material.ambient", 0.0f, 0.82f, 0.275f);
+    GrassShader.setVec3("material.diffuse", 0.001f, 0.001f, 0.001f);
+    GrassShader.setFloat("material.shininess", 32.0f);
+    GrassShader.setVec3("material.color", 1.0f, 0.5f, 0.31f);
+
+    glBindVertexArray(VAOs[0]);
     for (int i = 0; i < 1000; i++) {
       model = glm::mat4(1.0f);
       model = glm::translate(
           model, glm::vec3(cubePositions[i].x, -4.0, cubePositions[i].y));
       model = glm::scale(model, glm::vec3(0.25f, 1.15f, 0.25f));
-      Orange.setMat4("model", model);
+      GrassShader.setMat4("model", model);
       glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 
@@ -294,11 +331,14 @@ void makeVAO(unsigned int *VAO, unsigned int *VBO, unsigned int *EBO,
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices, GL_STATIC_DRAW);
   }
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                         (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+                        (void *)(6 * sizeof(float)));
+  glEnableVertexAttribArray(2);
 }
 
 void mouse_callback(GLFWwindow *window, double xposIn, double yposIn) {
