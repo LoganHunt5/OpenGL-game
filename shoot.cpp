@@ -128,8 +128,8 @@ int main() {
       true); // tell stb_image.h to flip loaded texture's on the y-axis.
   unsigned char *data =
       stbi_load("container2.png", &width, &height, &nrChannels, 0);
-  unsigned int textures[2];
-  glGenTextures(2, textures);
+  unsigned int textures[5];
+  glGenTextures(5, textures);
   glBindTexture(GL_TEXTURE_2D, textures[0]);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -142,8 +142,47 @@ int main() {
   glGenerateMipmap(GL_TEXTURE_2D);
   stbi_image_free(data);
 
-  data = stbi_load("grass.jpg", &width, &height, &nrChannels, 0);
+  data = stbi_load("grass.png", &width, &height, &nrChannels, 0);
   glBindTexture(GL_TEXTURE_2D, textures[1]);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA,
+               GL_UNSIGNED_BYTE, data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+  stbi_image_free(data);
+
+  data = stbi_load("container2_specular.png", &width, &height, &nrChannels, 0);
+  glBindTexture(GL_TEXTURE_2D, textures[2]);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA,
+               GL_UNSIGNED_BYTE, data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+  stbi_image_free(data);
+
+  data = stbi_load("containerEmission.png", &width, &height, &nrChannels, 0);
+  glBindTexture(GL_TEXTURE_2D, textures[3]);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA,
+               GL_UNSIGNED_BYTE, data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+  stbi_image_free(data);
+
+  data = stbi_load("black.png", &width, &height, &nrChannels, 0);
+  glBindTexture(GL_TEXTURE_2D, textures[4]);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -217,12 +256,17 @@ int main() {
     Orange.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
     Orange.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
     Orange.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-    Orange.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
     Orange.setFloat("material.shininess", 32.0f);
     Orange.setVec3("material.color", 1.0f, 0.5f, 0.31f);
     Orange.setInt("material.diffuse", 0);
+    Orange.setInt("material.specular", 1);
+    Orange.setInt("material.emission", 2);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, textures[2]);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, textures[3]);
 
     view = camera.GetViewMatrix();
     Orange.setMat4("view", view);
@@ -245,11 +289,22 @@ int main() {
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, -5.0f, 0.0f));
     model = glm::scale(model, glm::vec3(1000.0f, 1.0f, 1000.0f));
-    Orange.setMat4("model", model);
-    Orange.setVec3("material.ambient", 0.1f, 0.1f, 0.1f);
-    Orange.setVec3("material.diffuse", 0.325f, 0.702f, 0.451f);
-    Orange.setVec3("material.specular", 0.101f, 0.101f, 0.101f);
-    Orange.setFloat("material.shininess", 64.0f);
+    GrassShader.use();
+    GrassShader.setMat4("model", model);
+    GrassShader.setMat4("projection", projection);
+    GrassShader.setMat4("view", view);
+    GrassShader.setVec3("viewPos", camera.Position.x, camera.Position.y,
+                        camera.Position.z);
+    GrassShader.setVec3("light.color", 1.0f, 0.957f, 0.898f);
+    GrassShader.setVec3("light.position", lightPos.x, lightPos.y, lightPos.z);
+    GrassShader.setVec3("light.ambient", 1.0f, 1.0f, 1.0f);
+    GrassShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
+    GrassShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+    GrassShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+    GrassShader.setVec3("material.ambient", 0.1f, 0.1f, 0.1f);
+    GrassShader.setVec3("material.diffuse", 0.325f, 0.4f, 0.2f);
+    GrassShader.setFloat("material.shininess", 32.0f);
+    GrassShader.setVec3("material.color", 1.0f, 0.5f, 0.31f);
 
     glBindVertexArray(VAOs[0]);
     glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -267,7 +322,7 @@ int main() {
     GrassShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
     GrassShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
     GrassShader.setVec3("material.ambient", 0.0f, 0.82f, 0.275f);
-    GrassShader.setVec3("material.diffuse", 0.001f, 0.001f, 0.001f);
+    GrassShader.setVec3("material.diffuse", 0.225f, 0.502f, 0.351f);
     GrassShader.setFloat("material.shininess", 32.0f);
     GrassShader.setVec3("material.color", 1.0f, 0.5f, 0.31f);
 
